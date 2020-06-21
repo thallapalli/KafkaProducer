@@ -2,6 +2,7 @@ package com.kt.learnkafka.kafkaproducer.controller;
 
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doNothing;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -42,6 +43,22 @@ public class KafkaProducerControllerTest {
 		).andExpect(status().isCreated());
 
 	}
+	
+	@Test
+	void updateEventTest() throws Exception {
+		//given
+		Book book = Book.builder().bookId(1).bookName("Name").bookAuthor("Auth").build();
+		Event event = Event.builder().eventId(2).book(book).ventType(EventType.NEW).build();
+		String payload = objMapper.writeValueAsString(event);
+		//doNothing().when(libraryEventProducer).sendLibraryEvent_Approach2(isA(Event.class));
+		 when(libraryEventProducer.sendLibraryEvent_Approach2(isA(Event.class))).thenReturn(null);
+
+		mockkMvc.perform(put("/v1/event").content(payload).contentType(MediaType.APPLICATION_JSON)
+
+		).andExpect(status().isOk());
+
+	}
+
 
 	@Test
 	void postEventTest_4XX() throws Exception {
