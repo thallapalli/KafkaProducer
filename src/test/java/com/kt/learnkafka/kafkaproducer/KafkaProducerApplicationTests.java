@@ -27,7 +27,6 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
-import org.springframework.test.annotation.Timed;
 import org.springframework.test.context.TestPropertySource;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -84,7 +83,7 @@ class KafkaProducerApplicationTests {
 		Event event = Event.builder().eventId(2).book(book).ventType(EventType.NEW).build();
 
 		HttpHeaders httpHeader = new HttpHeaders();
-		httpHeader.set("contect-type", MediaType.APPLICATION_JSON_VALUE);
+		httpHeader.set("contentt-type", MediaType.APPLICATION_JSON_VALUE);
 		HttpEntity<Event> request = new HttpEntity<>(event, httpHeader);
 		ResponseEntity<Event> exchange = testRestTempalte.exchange("/v1/event", HttpMethod.POST, request, Event.class);
 		assertEquals(HttpStatus.CREATED, exchange.getStatusCode());
