@@ -1,17 +1,17 @@
 package com.kt.learnkafka.kafkaproducer.controller;
 
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.stubbing.answers.DoesNothing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.mockito.Mockito.doNothing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kt.learnkafka.kafkaproducer.domian.Book;
@@ -33,8 +33,8 @@ public class KafkaProducerControllerTest {
 		Book book = Book.builder().bookId(1).bookName("Name").bookAuthor("Auth").build();
 		Event event = Event.builder().eventId(2).book(book).ventType(EventType.NEW).build();
 		String payload = objMapper.writeValueAsString(event);
-		doNothing().when(libraryEventProducer.sendLibraryEventSynchronous(event));
-		
+		doNothing().when(libraryEventProducer).sendLibraryEvent_Approach2(isA(Event.class));
+
 		mockkMvc.perform(post("/v1/event")
 				.content(payload)
 				.contentType(MediaType.APPLICATION_JSON)
