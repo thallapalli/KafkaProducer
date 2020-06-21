@@ -105,6 +105,38 @@ class KafkaProducerApplicationTests {
 		
 
 	}
+	@Test
+	   @Timeout(5)
+	   void putLibraryEvent() throws InterruptedException, JsonProcessingException {
+	       //given
+	       Book book = Book.builder()
+	               .bookId(456)
+	               .bookAuthor("KT")
+	               .bookName("Kafka using Spring Boot")
+	               .build();
+
+	       Event libraryEvent = Event.builder()
+	               .eventId(123).ventType(EventType.UPDATE)
+	               .book(book)
+	               .build();
+	       HttpHeaders headers = new HttpHeaders();
+	       headers.set("content-type", MediaType.APPLICATION_JSON.toString());
+	       HttpEntity<Event> request = new HttpEntity<>(libraryEvent, headers);
+
+	       //when
+	       ResponseEntity<Event> responseEntity = testRestTempalte.exchange("/v1/event", HttpMethod.PUT, request, Event.class);
+
+	       //then
+	       assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+
+	       ConsumerRecord<Integer, String> consumerRecord = KafkaTestUtils.getSingleRecord(consumer, "event");
+	       //Thread.sleep(3000);
+	       String expected = objMapper.writeValueAsString(libraryEvent);
+			 String value = consumerRecord.value();
+	       assertEquals(expected, value);
+
+	   }
+
 	
 
 }
