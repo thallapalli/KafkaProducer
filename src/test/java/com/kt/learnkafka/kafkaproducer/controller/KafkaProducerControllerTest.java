@@ -19,7 +19,7 @@ import com.kt.learnkafka.kafkaproducer.domian.Book;
 import com.kt.learnkafka.kafkaproducer.domian.Event;
 import com.kt.learnkafka.kafkaproducer.domian.EventType;
 import com.kt.learnkafka.kafkaproducer.producer.LibraryEventProducer;
-
+import static org.mockito.Mockito.when;
 @WebMvcTest(KafkaProducerController.class)
 @AutoConfigureMockMvc
 public class KafkaProducerControllerTest {
@@ -34,7 +34,8 @@ public class KafkaProducerControllerTest {
 		Book book = Book.builder().bookId(1).bookName("Name").bookAuthor("Auth").build();
 		Event event = Event.builder().eventId(2).book(book).ventType(EventType.NEW).build();
 		String payload = objMapper.writeValueAsString(event);
-		doNothing().when(libraryEventProducer).sendLibraryEvent_Approach2(isA(Event.class));
+		//doNothing().when(libraryEventProducer).sendLibraryEvent_Approach2(isA(Event.class));
+		 when(libraryEventProducer.sendLibraryEvent_Approach2(isA(Event.class))).thenReturn(null);
 
 		mockkMvc.perform(post("/v1/event").content(payload).contentType(MediaType.APPLICATION_JSON)
 
@@ -56,8 +57,9 @@ public class KafkaProducerControllerTest {
 	                .build();
 	        String erroMesg="book must not be null";
 		String payload = objMapper.writeValueAsString(event);
-		doNothing().when(libraryEventProducer).sendLibraryEvent_Approach2(isA(Event.class));
+		 when(libraryEventProducer.sendLibraryEvent_Approach2(isA(Event.class))).thenReturn(null);
 
+			
 		mockkMvc.perform(post("/v1/event").content(payload).contentType(MediaType.APPLICATION_JSON)
 
 		).andExpect(status().is4xxClientError())
