@@ -39,103 +39,13 @@ import com.kt.learnkafka.kafkaproducer.domian.Event;
 import com.kt.learnkafka.kafkaproducer.domian.EventType;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@EmbeddedKafka(topics = { "event" })
-@TestPropertySource(properties = { "spring.kafka.producer.bootstrap-servers=${spring.embedded.kafka.brokers}",
 
-		"spring.kafka.admin.properties.bootstrap.servers=${spring.embedded.kafka.brokers}"
-
-})
 class KafkaProducerApplicationTests {
-	@Autowired
-	TestRestTemplate testRestTempalte;
-	@Autowired
-	EmbeddedKafkaBroker embeddedKafkaBroker;
-	@Autowired
-	ObjectMapper objMapper;
-
-	private Consumer<Integer, String> consumer;
-
-	@BeforeEach
-	void setUp() {
-		// String group, String autoCommit,
-		// EmbeddedKafkaBroker embeddedKafka
-
-		Map<String, Object> configs = new HashMap<>(
-				KafkaTestUtils.consumerProps("group1", "true", embeddedKafkaBroker));
-		Deserializer keyDeserializerSupplier = new IntegerDeserializer();
-		Deserializer valueDeserializerSupplier = new StringDeserializer();
-		consumer = new DefaultKafkaConsumerFactory<>(configs, keyDeserializerSupplier, valueDeserializerSupplier)
-				.createConsumer();
-		embeddedKafkaBroker.consumeFromAllEmbeddedTopics(consumer);
-
-	}
-
-	@AfterEach
-	void tearDown() {
-		consumer.close();
-	}
+	
 
 	@Test
 	void contextLoads() {
 	}
-
-	@Test
-	@Timeout(5)
-	public void testpostEvent() {
-		Book book = Book.builder().bookId(1).bookName("Name").bookAuthor("Auth").build();
-		Event event = Event.builder().eventId(2).book(book).ventType(EventType.NEW).build();
-
-		HttpHeaders httpHeader = new HttpHeaders();
-		httpHeader.set("contentt-type", MediaType.APPLICATION_JSON_VALUE);
-		HttpEntity<Event> request = new HttpEntity<>(event, httpHeader);
-		ResponseEntity<Event> exchange = testRestTempalte.exchange("/v1/event", HttpMethod.POST, request, Event.class);
-		assertEquals(HttpStatus.CREATED, exchange.getStatusCode());
-		ConsumerRecord<Integer, String> singleRecord = KafkaTestUtils.getSingleRecord(consumer, "event");
-
-		try {
-			
-
-			String expected = objMapper.writeValueAsString(event);
-			String value = singleRecord.value();
-			assertEquals(expected, value);
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		
-
-	}
-	@Test
-	   @Timeout(5)
-	   void putLibraryEvent() throws InterruptedException, JsonProcessingException {
-	       //given
-	       Book book = Book.builder()
-	               .bookId(456)
-	               .bookAuthor("KT")
-	               .bookName("Kafka using Spring Boot")
-	               .build();
-
-	       Event libraryEvent = Event.builder()
-	               .eventId(123).ventType(EventType.UPDATE)
-	               .book(book)
-	               .build();
-	       HttpHeaders headers = new HttpHeaders();
-	       headers.set("content-type", MediaType.APPLICATION_JSON.toString());
-	       HttpEntity<Event> request = new HttpEntity<>(libraryEvent, headers);
-
-	       //when
-	       ResponseEntity<Event> responseEntity = testRestTempalte.exchange("/v1/event", HttpMethod.PUT, request, Event.class);
-
-	       //then
-	       assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-
-	       ConsumerRecord<Integer, String> consumerRecord = KafkaTestUtils.getSingleRecord(consumer, "event");
-	       //Thread.sleep(3000);
-	       String expected = objMapper.writeValueAsString(libraryEvent);
-			 String value = consumerRecord.value();
-	       assertEquals(expected, value);
-
-	   }
 
 	
 
