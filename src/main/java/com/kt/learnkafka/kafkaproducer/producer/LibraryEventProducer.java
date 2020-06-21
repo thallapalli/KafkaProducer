@@ -1,8 +1,12 @@
 package com.kt.learnkafka.kafkaproducer.producer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.header.Header;
+import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -83,7 +87,13 @@ public class LibraryEventProducer {
 	private ProducerRecord<Integer, String> buildProducerRecord(Integer key, String value, String topic2) {
 		// TODO Auto-generated method stub
 		ProducerRecord<Integer, String>  producerRecord =null;
-		producerRecord=new ProducerRecord<Integer, String>(topic2, null, key, value);
+		List<Header> listOfHeaders=new ArrayList<Header>();
+		RecordHeader recordHeader=new RecordHeader("event-source", "scanner".getBytes());
+		RecordHeader recordHeader1=new RecordHeader("event-source1", "scanner1".getBytes());
+		
+		listOfHeaders.add(recordHeader);
+		listOfHeaders.add(recordHeader1);
+		producerRecord=new ProducerRecord<Integer, String>(topic2, null, key, value,listOfHeaders);
 		
 		return producerRecord;
 	}
