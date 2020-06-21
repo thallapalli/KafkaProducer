@@ -1,5 +1,7 @@
 package com.kt.learnkafka.kafkaproducer.producer;
 
+import java.util.concurrent.ExecutionException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -46,6 +48,26 @@ public class LibraryEventProducer {
 		});
 
 	}
+	
+	public SendResult<Integer, String> sendLibraryEventSynchronous(Event event)
+			throws JsonProcessingException, InterruptedException, ExecutionException {
+		Integer key = event.getEventId();
+		SendResult<Integer, String> sendResult=null;
+		String value = objectMapper.writeValueAsString(event);
+        try {
+        	sendResult= kafkaTemplate.sendDefault(key, value).get();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			log.error("InterruptedException  "+e.getMessage());
+			throw e;
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			log.error("InterruptedException  "+e.getMessage());
+			throw e;
+		}
+        return sendResult;
+	}
+	
 
 	private void handleSucess(Integer key, String value, SendResult<Integer, String> result) {
 		System.out.println("Message Sent Sucessfully -------->" + key + " and value is " + value + "  partition "

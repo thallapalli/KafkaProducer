@@ -1,5 +1,7 @@
 package com.kt.learnkafka.kafkaproducer.controller;
 
+import java.util.concurrent.ExecutionException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,16 +15,23 @@ import com.kt.learnkafka.kafkaproducer.domian.Book;
 import com.kt.learnkafka.kafkaproducer.domian.Event;
 import com.kt.learnkafka.kafkaproducer.producer.LibraryEventProducer;
 
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
+@Slf4j
 public class KafkaProducerController {
 	@Autowired
 	LibraryEventProducer libraryEventProducer;
 	
 	@PostMapping("/v1/event")
-	public ResponseEntity<Event> postEvent(@RequestBody Event event ) throws JsonProcessingException{
+	public ResponseEntity<Event> postEvent(@RequestBody Event event ) throws JsonProcessingException, InterruptedException, ExecutionException{
 		//Invoke Kafka producer
-		libraryEventProducer.sendLibraryEvent(event);
+		log.debug("before sendLibraryEvent ");
+		//libraryEventProducer.sendLibraryEvent(event);
+		libraryEventProducer.sendLibraryEventSynchronous(event);
+		log.debug("after sendLibraryEvent ");
 		return ResponseEntity.status(HttpStatus.CREATED).body(event);
+		
 		
 	}
 	@GetMapping("/v1/getevent")
