@@ -3,6 +3,7 @@ package com.kt.learnkafka.kafkaproducer.controller;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
@@ -53,13 +54,19 @@ public class KafkaProducerControllerTest {
 	                .eventId(null)
 	                .book(null)
 	                .build();
+	        String erroMesg="book must not be null";
 		String payload = objMapper.writeValueAsString(event);
 		doNothing().when(libraryEventProducer).sendLibraryEvent_Approach2(isA(Event.class));
 
 		mockkMvc.perform(post("/v1/event").content(payload).contentType(MediaType.APPLICATION_JSON)
 
-		).andExpect(status().is4xxClientError());
+		).andExpect(status().is4xxClientError())
+		
+		.andExpect(content().string(erroMesg))
+		;
 
 	}
+	
+
 
 }
