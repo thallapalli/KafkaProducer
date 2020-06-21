@@ -12,12 +12,19 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.test.context.TestPropertySource;
 
 import com.kt.learnkafka.kafkaproducer.domian.Book;
 import com.kt.learnkafka.kafkaproducer.domian.Event;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@EmbeddedKafka(topics= {"event"})
+@TestPropertySource(properties= {"spring.kafka.producer.bootstrap-servers=${spring.embedded.kafka.brokers}",
+		
+		"spring.kafka.admin.properties.bootstrap.servers=${spring.embedded.kafka.brokers}"
 
+})
 class KafkaProducerApplicationTests {
 	@Autowired 
 	TestRestTemplate testRestTempalte;

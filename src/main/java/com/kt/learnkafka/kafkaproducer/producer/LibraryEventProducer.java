@@ -129,7 +129,7 @@ public class LibraryEventProducer {
 		// TODO Auto-generated method stub
 
 		System.out.println(
-				"Message Not Sent  -------->" + key + " and value is " + value + " expetion " + ex.getMessage());
+				"Message Not Sent--------------------------------------------------------------------------------------------------------------------  -------->" + key + " and value is " + value + " expetion " + ex.getMessage());
 		try {
 			throw ex;
 		} catch (Throwable throwable) {
