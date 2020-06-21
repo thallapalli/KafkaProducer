@@ -24,10 +24,10 @@ import com.kt.learnkafka.kafkaproducer.producer.LibraryEventProducer;
 public class KafkaProducerControllerTest {
 	@Autowired
 	MockMvc mockkMvc;
-	ObjectMapper objMapper=new ObjectMapper();
+	ObjectMapper objMapper = new ObjectMapper();
 	@MockBean
 	LibraryEventProducer libraryEventProducer;
-	
+
 	@Test
 	void postEventTest() throws Exception {
 		Book book = Book.builder().bookId(1).bookName("Name").bookAuthor("Auth").build();
@@ -35,13 +35,31 @@ public class KafkaProducerControllerTest {
 		String payload = objMapper.writeValueAsString(event);
 		doNothing().when(libraryEventProducer).sendLibraryEvent_Approach2(isA(Event.class));
 
-		mockkMvc.perform(post("/v1/event")
-				.content(payload)
-				.contentType(MediaType.APPLICATION_JSON)
-				
-				
-				).andExpect(status().isCreated());
-		
+		mockkMvc.perform(post("/v1/event").content(payload).contentType(MediaType.APPLICATION_JSON)
+
+		).andExpect(status().isCreated());
+
 	}
-	
+
+	@Test
+	void postEventTest_4XX() throws Exception {
+		 Book book = Book.builder()
+	                .bookId(null)
+	                .bookAuthor(null)
+	                .bookName("Kafka using Spring Boot")
+	                .build();
+
+	        Event event = Event.builder()
+	                .eventId(null)
+	                .book(null)
+	                .build();
+		String payload = objMapper.writeValueAsString(event);
+		doNothing().when(libraryEventProducer).sendLibraryEvent_Approach2(isA(Event.class));
+
+		mockkMvc.perform(post("/v1/event").content(payload).contentType(MediaType.APPLICATION_JSON)
+
+		).andExpect(status().is4xxClientError());
+
+	}
+
 }
