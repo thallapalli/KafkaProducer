@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.kt.learnkafka.kafkaproducer.domian.Book;
 import com.kt.learnkafka.kafkaproducer.domian.Event;
+import com.kt.learnkafka.kafkaproducer.domian.EventType;
 import com.kt.learnkafka.kafkaproducer.producer.LibraryEventProducer;
 
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,8 @@ public class KafkaProducerController {
 		log.debug("before sendLibraryEvent ");
 		//libraryEventProducer.sendLibraryEvent(event);
 		//libraryEventProducer.sendLibraryEventSynchronous(event);
+		event.setVentType(EventType.NEW);
+		
 		libraryEventProducer.sendLibraryEvent_Approach2(event);
 		log.debug("after sendLibraryEvent ");
 		return ResponseEntity.status(HttpStatus.CREATED).body(event);
