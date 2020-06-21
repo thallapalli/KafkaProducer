@@ -28,7 +28,8 @@ public class KafkaProducerController {
 		//Invoke Kafka producer
 		log.debug("before sendLibraryEvent ");
 		//libraryEventProducer.sendLibraryEvent(event);
-		libraryEventProducer.sendLibraryEventSynchronous(event);
+		//libraryEventProducer.sendLibraryEventSynchronous(event);
+		libraryEventProducer.sendLibraryEvent_Approach2(event);
 		log.debug("after sendLibraryEvent ");
 		return ResponseEntity.status(HttpStatus.CREATED).body(event);
 		
