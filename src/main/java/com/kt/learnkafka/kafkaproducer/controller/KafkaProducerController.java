@@ -2,11 +2,15 @@ package com.kt.learnkafka.kafkaproducer.controller;
 
 import java.util.concurrent.ExecutionException;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,7 +29,7 @@ public class KafkaProducerController {
 	LibraryEventProducer libraryEventProducer;
 	
 	@PostMapping("/v1/event")
-	public ResponseEntity<Event> postEvent(@RequestBody Event event ) throws JsonProcessingException, InterruptedException, ExecutionException{
+	public ResponseEntity<Event> postEvent(@Valid  @RequestBody  Event event ) throws JsonProcessingException, InterruptedException, ExecutionException{
 		//Invoke Kafka producer
 		log.debug("before sendLibraryEvent ");
 		//libraryEventProducer.sendLibraryEvent(event);
@@ -35,6 +39,22 @@ public class KafkaProducerController {
 		libraryEventProducer.sendLibraryEvent_Approach2(event);
 		log.debug("after sendLibraryEvent ");
 		return ResponseEntity.status(HttpStatus.CREATED).body(event);
+		
+		
+	}
+	@PutMapping("/v1/event")
+	public ResponseEntity<?> putEvent(@Valid  @RequestBody  Event event ) throws JsonProcessingException, InterruptedException, ExecutionException{
+		//Invoke Kafka producer
+		log.debug("before sendLibraryEvent ");
+		//libraryEventProducer.sendLibraryEvent(event);
+		//libraryEventProducer.sendLibraryEventSynchronous(event);
+		event.setVentType(EventType.UPDATE);
+		if(event.getEventId()==null) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Please pass the Event Id");
+		}
+		libraryEventProducer.sendLibraryEvent_Approach2(event);
+		log.debug("after sendLibraryEvent ");
+		return ResponseEntity.status(HttpStatus.OK).body(event);
 		
 		
 	}
